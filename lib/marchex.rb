@@ -11,21 +11,21 @@ require 'rest-client'
 module Marchex
   class Marchexapi
 
-      #RestClient.log = 'stdout' #Debugging API calls
+      RestClient.log = 'stdout' #Debugging API calls
 
       def initialize(u, p)
         @url = 'https://userapi.voicestar.com/api/jsonrpc/1'
-        $auth = 'Basic ' + Base64.encode64(u + ':' + p).chomp      
+        @auth = 'Basic ' + Base64.encode64(u + ':' + p).chomp      
       end
 
 
       def account_list()
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'acct.list', 'params' => [] }.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'acct.list', 'params' => [] }.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
         
       end
 
       def client_ad_list(client_id, status ='')
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.list.all', 'params' => [client_id, {'status' => status.downcase}]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.list.all', 'params' => [client_id, {'status' => status.downcase}]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
 
       end  
       
@@ -35,31 +35,31 @@ module Marchex
       end
 
       def ad_forward_list(campaign_id)
-       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.forw.list', 'params' => [campaign_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.forw.list', 'params' => [campaign_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
       end 
 
       def ad_record_status(campaign_id)
-       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.recordcall.get', 'params' => [campaign_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.recordcall.get', 'params' => [campaign_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
        return response.body["result"]
       end
 
       def user_list(account_id)
-       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'user.list', 'params' => [account_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'user.list', 'params' => [account_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
        return response.body["result"]
       end
 
       def user_permissions(user_id)
-       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'user.permissions.get', 'params' => [user_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+       response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'user.permissions.get', 'params' => [user_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
        return response.body["result"]
       end
 
       def ad_custom_define(acc_id,field_number, field_name, field_type, field_values)
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.custom.define', 'params' => [acc_id,field_number, field_name, field_type, field_values]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.custom.define', 'params' => [acc_id,field_number, field_name, field_type, field_values]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
        return response.body["result"]
       end
 
       def ad_custom_set(acc_id, campaign_id, field_name, field_value)
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.custom.set', 'params' => [acc_id,campaign_id, field_name, field_value]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'ad.custom.set', 'params' => [acc_id,campaign_id, field_name, field_value]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
         return response.body["result"]
       end 
 
@@ -84,17 +84,17 @@ module Marchex
         search_options[:status] = opts[:status] if opts[:status]
         search_options[:spotted_keywords] = opts[:spotted_keywords] if opts[:spotted_keywords]
         search_options[:subacct] = opts[:subacct] if opts[:subacct]
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.search', 'params' => [opts[:acct_id], search_options ]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.search', 'params' => [opts[:acct_id], search_options ]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
         return response.body["result"]
       end
 
       def get_call (call_id)      
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.get', 'params' => [call_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.get', 'params' => [call_id]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
         return response.body["result"]
       end
 
       def get_call_audio(call_id, audio_format)
-        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.audio', 'params' => [call_id, audio_format]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => $auth))
+        response = parse_json(RestClient.post(@url, {'jsonrpc' => '2.0', 'id' => '1', 'method' => 'call.audio', 'params' => [call_id, audio_format]}.to_json, :content_type => 'application/json', :accept => 'application/json', :Authorization => @auth))
         return response.body["result"]
       end
 
